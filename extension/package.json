@@ -1,0 +1,21 @@
+{
+  "name": "dataguard-extension",
+  "version": "1.0.0",
+  "description": "DataGuard browser extension for privacy-preserving email data access",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && yarn copy-assets",
+    "dev": "tsc --watch",
+    "copy-assets": "cp -r src/assets/* dist/ 2>/dev/null || true",
+    "clean": "rm -rf dist",
+    "package": "yarn build && zip -r dataguard-extension.zip dist/ manifest.json icons/"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.254",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "snarkjs": "^0.7.2"
+  },
+  "license": "MIT"
+}
