@@ -1,0 +1,282 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 2px solid #e1e5e9;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.filter-btn:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.filter-btn.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.stats {
+    font-weight: 600;
+    color: #666;
+}
+
+/* Inbox */
+.inbox {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.email-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.email-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+    min-height: 60px;
+}
+
+.email-item:hover {
+    background: #f5f5f5;
+}
+
+.email-item:last-child {
+    border-bottom: none;
+}
+
+.email-item.unread {
+    background: #f8f9fa;
+    border-left: 3px solid #007bff;
+    font-weight: 500;
+}
+
+.email-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: #007bff;
+    border-radius: 50%;
+}
+
+.email-item.read {
+    background: #ffffff;
+    opacity: 0.8;
+}
+
+.email-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 20px;
+}
+
+.email-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.email-from {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.email-time {
+    font-size: 0.8rem;
+    color: #666;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+.email-subject {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.email-preview {
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 2.6em;
+}
+
+.email-type {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.email-type.subscription {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.email-type.delivery {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.email-type.purchase {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.email-type.general {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* API Info Section */
+.api-info {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.api-info h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.api-info p {
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.api-info code {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    color: #d63384;
+    border: 1px solid #e9ecef;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .filter-buttons {
+        justify-content: center;
+    }
+    
+    .email-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .email-time {
+        align-self: flex-end;
+    }
+}

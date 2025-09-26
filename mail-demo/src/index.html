@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Service Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📧 Email Service Demo</h1>
+            <p class="subtitle">Mock email service for testing AI agent integrations</p>
+        </header>
+
+        <div class="controls">
+            <div class="filter-buttons">
+                <button id="all-emails" class="filter-btn active">All Emails</button>
+                <button id="subscription-emails" class="filter-btn">Subscriptions</button>
+                <button id="delivery-emails" class="filter-btn">Deliveries</button>
+                <button id="purchase-emails" class="filter-btn">Purchases</button>
+                <button id="unread-emails" class="filter-btn">Unread</button>
+            </div>
+            <div class="stats">
+                <span id="email-count">21 emails</span>
+            </div>
+        </div>
+
+        <div class="inbox">
+            <div class="email-list" id="email-list">
+                <!-- Emails will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="api-info">
+            <h3>🔗 API Endpoint</h3>
+            <p>This service provides a simple REST API for AI agents to access email data:</p>
+            <code>GET /api/emails?type=subscription|delivery|purchase|unread</code>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>

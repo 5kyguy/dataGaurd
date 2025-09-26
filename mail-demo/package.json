@@ -2,12 +2,14 @@
   "name": "mail-demo",
   "version": "1.0.0",
   "description": "Simple email demo inbox for DataGuard project testing",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/index.js",
-    "serve": "npx http-server dist -p 3000 -o"
+    "start": "node dist/server.js",
+    "serve": "npx http-server src -p 3000 -o",
+    "dev-server": "tsc && node dist/server.js"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
