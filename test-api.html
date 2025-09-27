@@ -135,50 +135,33 @@
         const API_BASE = 'http://localhost:3000/api';
         
         function showStatus(message, isError = false, targetId = 'status') {
+            console.log(`[DEBUG] showStatus called:`, { message, isError, targetId });
             const statusEl = document.getElementById(targetId);
             statusEl.innerHTML = `<div class="status ${isError ? 'error' : 'success'}">${message}</div>`;
         }
         
         function showResult(data, targetId = 'result') {
+            console.log(`[DEBUG] showResult called:`, { data, targetId });
             const resultEl = document.getElementById(targetId);
             resultEl.innerHTML = `<div class="result">${JSON.stringify(data, null, 2)}</div>`;
         }
         
         async function testAPI(type) {
+            console.log(`[DEBUG] testAPI called with type: ${type}`);
+            console.log(`[DEBUG] API_BASE: ${API_BASE}`);
+            
             showStatus(`Testing ${type} emails...`, false);
             
             try {
                 const url = type === 'all' ? `${API_BASE}/emails` : `${API_BASE}/emails?type=${type}`;
+                console.log(`[DEBUG] Making request to URL: ${url}`);
+                
                 const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                showStatus(`✅ Successfully retrieved ${data.length} ${type} emails`, false);
-                showResult(data);
-                
-            } catch (error) {
-                showStatus(`❌ Error: ${error.message}`, true);
-                showResult({ error: error.message });
-            }
-        }
-        
-        async function testDirectAPI(type) {
-            showStatus(`Testing direct API call for ${type}...`, false, 'directStatus');
-            
-            try {
-                // Use a different approach to bypass potential extension interception
-                const url = `${API_BASE}/emails?type=${type}`;
-                
-                // Create a new request with different headers
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Direct-Call': 'true',
-                        'Content-Type': 'application/json'
-                    }
+                console.log(`[DEBUG] Response received:`, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok,
+                    headers: Object.fromEntries(response.headers.entries())
                 });
                 
                 if (!response.ok) {
@@ -186,10 +169,63 @@
                 }
                 
                 const data = await response.json();
+                console.log(`[DEBUG] Response data:`, data);
+                console.log(`[DEBUG] Data length: ${data.length}`);
+                
+                showStatus(`✅ Successfully retrieved ${data.length} ${type} emails`, false);
+                showResult(data);
+                
+            } catch (error) {
+                console.error(`[DEBUG] Error in testAPI:`, error);
+                console.error(`[DEBUG] Error stack:`, error.stack);
+                showStatus(`❌ Error: ${error.message}`, true);
+                showResult({ error: error.message });
+            }
+        }
+        
+        async function testDirectAPI(type) {
+            console.log(`[DEBUG] testDirectAPI called with type: ${type}`);
+            console.log(`[DEBUG] API_BASE: ${API_BASE}`);
+            
+            showStatus(`Testing direct API call for ${type}...`, false, 'directStatus');
+            
+            try {
+                // Use a different approach to bypass potential extension interception
+                const url = `${API_BASE}/emails?type=${type}`;
+                console.log(`[DEBUG] Making direct request to URL: ${url}`);
+                
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        'X-Direct-Call': 'true',
+                        'Content-Type': 'application/json'
+                    }
+                };
+                console.log(`[DEBUG] Request options:`, requestOptions);
+                
+                // Create a new request with different headers
+                const response = await fetch(url, requestOptions);
+                console.log(`[DEBUG] Direct response received:`, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok,
+                    headers: Object.fromEntries(response.headers.entries())
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log(`[DEBUG] Direct response data:`, data);
+                console.log(`[DEBUG] Direct data length: ${data.length}`);
+                
                 showStatus(`✅ Direct call successful: ${data.length} ${type} emails`, false, 'directStatus');
                 showResult(data, 'directResult');
                 
             } catch (error) {
+                console.error(`[DEBUG] Error in testDirectAPI:`, error);
+                console.error(`[DEBUG] Direct call error stack:`, error.stack);
                 showStatus(`❌ Direct call error: ${error.message}`, true, 'directStatus');
                 showResult({ error: error.message }, 'directResult');
             }
@@ -197,20 +233,34 @@
         
         // Test if the mail-demo service is running
         async function checkServiceStatus() {
+            console.log(`[DEBUG] checkServiceStatus called`);
+            console.log(`[DEBUG] Checking service at: ${API_BASE}/emails`);
+            
             try {
                 const response = await fetch(`${API_BASE}/emails`);
+                console.log(`[DEBUG] Service status response:`, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    ok: response.ok,
+                    headers: Object.fromEntries(response.headers.entries())
+                });
+                
                 if (response.ok) {
                     console.log('✅ Mail-demo service is running');
                 } else {
                     console.log('⚠️ Mail-demo service responded with error:', response.status);
                 }
             } catch (error) {
+                console.error(`[DEBUG] Service check error:`, error);
+                console.error(`[DEBUG] Service check error stack:`, error.stack);
                 console.log('❌ Mail-demo service is not accessible:', error.message);
                 showStatus('❌ Mail-demo service is not running. Please start it first.', true);
             }
         }
         
         // Check service status on page load
+        console.log(`[DEBUG] Page loaded, initializing...`);
+        console.log(`[DEBUG] API_BASE configured as: ${API_BASE}`);
         checkServiceStatus();
     </script>
 </body>

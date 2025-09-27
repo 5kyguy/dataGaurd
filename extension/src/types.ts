@@ -32,6 +32,8 @@ export interface DataRequest {
   requester: string;
   purpose: string;
   timestamp: string;
+  originalUrl?: string;
+  originalInit?: RequestInit;
 }
 
 export interface ExtensionMessage {

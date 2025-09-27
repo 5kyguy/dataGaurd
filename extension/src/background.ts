@@ -1,8 +1,20 @@
 // Background service worker for DataGuard extension
 // Handles request interception and communication with content scripts
 
-import { EmailData, EmailPredicate, ProofResult } from './types';
-import { generateProof } from './zk-proof';
+// Define types locally since we're not using modules
+interface EmailData {
+  id: string;
+  subject: string;
+  sender: string;
+  date: string;
+  body: string;
+  type: string;
+}
+
+interface EmailPredicate {
+  type: 'subscription' | 'delivery' | 'purchase';
+  maxAge: number;
+}
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -68,10 +80,18 @@ async function handleEmailDataRequest(request: any, sendResponse: (response: any
 
 async function handleProofGeneration(request: any, sendResponse: (response: any) => void) {
   try {
-    const proof = await generateProof(request.predicate, request.emailData);
+    // For now, generate a mock proof without ZK
+    const mockProof = {
+      predicate: request.predicate,
+      emailCount: request.emailData.length,
+      proof: 'mock-proof-' + Date.now(),
+      publicSignals: [request.emailData.length.toString()],
+      timestamp: new Date().toISOString()
+    };
+    
     sendResponse({
       success: true,
-      proof: proof
+      proof: mockProof
     });
   } catch (error) {
     console.error('Error generating proof:', error);
@@ -146,48 +166,77 @@ function isRequestAllowed(request: any, policy: any): boolean {
 }
 
 async function fetchEmailData(predicate: EmailPredicate): Promise<EmailData[]> {
-  // In a real implementation, this would connect to the mail-demo service
-  // For now, we'll simulate the data fetch
+  // Connect to the mail-demo service with proper URL parameters
   try {
-    const response = await fetch('http://localhost:3000/api/emails');
+    const url = `http://localhost:3000/api/emails?type=${predicate.type}`;
+    console.log('Fetching email data from:', url);
+    
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const emails = await response.json();
+    console.log(`Fetched ${emails.length} emails from mail-demo service`);
+    
+    // Apply additional filtering based on predicate criteria
     return filterEmailsByPredicate(emails, predicate);
   } catch (error) {
-    console.error('Failed to fetch email data:', error);
+    console.error('Failed to fetch email data from mail-demo service:', error);
     // Fallback to mock data for development
+    console.log('Using mock data as fallback');
     return getMockEmailData(predicate);
   }
 }
 
-function filterEmailsByPredicate(emails: EmailData[], predicate: EmailPredicate): EmailData[] {
+function filterEmailsByPredicate(emails: any[], predicate: EmailPredicate): EmailData[] {
   const now = new Date();
   const cutoffDate = new Date(now.getTime() - predicate.maxAge * 24 * 60 * 60 * 1000);
   
+  console.log(`Filtering emails by predicate: ${predicate.type}, maxAge: ${predicate.maxAge} days`);
+  
   return emails.filter(email => {
-    const emailDate = new Date(email.date);
-    if (emailDate < cutoffDate) return false;
+    // Check date filter
+    const emailDate = new Date(email.timestamp || email.date);
+    if (emailDate < cutoffDate) {
+      console.log(`Email ${email.id} filtered out due to age (${emailDate.toISOString()} < ${cutoffDate.toISOString()})`);
+      return false;
+    }
+    
+    // Since the mail-demo service already filters by type, we mainly need to check date
+    // But we can also do additional keyword-based filtering for robustness
+    const emailType = email.type || 'general';
+    const subject = email.subject || '';
+    const sender = email.from || email.sender || '';
     
     switch (predicate.type) {
       case 'subscription':
-        return email.type === 'subscription' || 
-               email.subject.toLowerCase().includes('unsubscribe') ||
-               email.subject.toLowerCase().includes('subscription');
+        return emailType === 'subscription' || 
+               subject.toLowerCase().includes('unsubscribe') ||
+               subject.toLowerCase().includes('subscription') ||
+               subject.toLowerCase().includes('newsletter');
       case 'delivery':
-        return email.type === 'delivery' ||
-               email.sender.toLowerCase().includes('amazon') ||
-               email.sender.toLowerCase().includes('dhl') ||
-               email.sender.toLowerCase().includes('ups');
+        return emailType === 'delivery' ||
+               subject.toLowerCase().includes('delivered') ||
+               subject.toLowerCase().includes('delivery') ||
+               sender.toLowerCase().includes('amazon') ||
+               sender.toLowerCase().includes('dhl') ||
+               sender.toLowerCase().includes('ups');
       case 'purchase':
-        return email.type === 'purchase' ||
-               email.subject.toLowerCase().includes('order') ||
-               email.subject.toLowerCase().includes('receipt');
+        return emailType === 'purchase' ||
+               subject.toLowerCase().includes('order') ||
+               subject.toLowerCase().includes('receipt') ||
+               subject.toLowerCase().includes('payment');
       default:
         return false;
     }
-  });
+  }).map(email => ({
+    id: email.id,
+    subject: email.subject,
+    sender: email.from || email.sender,
+    date: email.timestamp || email.date,
+    body: email.body,
+    type: email.type
+  }));
 }
 
 function applyRedaction(emailData: EmailData[], policy: any): EmailData[] {

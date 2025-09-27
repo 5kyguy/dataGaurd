@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc && yarn copy-assets",
     "dev": "tsc --watch",
-    "copy-assets": "cp -r src/assets/* dist/ 2>/dev/null || true",
+    "copy-assets": "cp -r src/assets/* dist/ 2>/dev/null || true && cp manifest.json dist/ && cp src/popup.html dist/ && cp src/popup.css dist/ && cp src/popup.js dist/",
     "clean": "rm -rf dist",
     "package": "yarn build && zip -r dataguard-extension.zip dist/ manifest.json icons/"
   },

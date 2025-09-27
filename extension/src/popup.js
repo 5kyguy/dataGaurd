@@ -4,7 +4,13 @@ class DataGuardPopup {
     constructor() {
         this.initializeElements();
         this.bindEvents();
-        this.loadUserPolicy();
+        this.init();
+    }
+
+    async init() {
+        // Small delay to ensure DOM is fully ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await this.loadUserPolicy();
         this.checkMailServiceStatus();
         this.loadRecentRequests();
     }
@@ -46,9 +52,15 @@ class DataGuardPopup {
         this.maxEmailAge.addEventListener('change', () => this.savePolicy());
 
         // Demo button events
-        this.demoSubscription.addEventListener('click', () => this.runDemo('subscription'));
-        this.demoDelivery.addEventListener('click', () => this.runDemo('delivery'));
-        this.demoPurchase.addEventListener('click', () => this.runDemo('purchase'));
+        if (this.demoSubscription) {
+            this.demoSubscription.addEventListener('click', () => this.runDemo('subscription'));
+        }
+        if (this.demoDelivery) {
+            this.demoDelivery.addEventListener('click', () => this.runDemo('delivery'));
+        }
+        if (this.demoPurchase) {
+            this.demoPurchase.addEventListener('click', () => this.runDemo('purchase'));
+        }
 
         // Footer events
         this.viewLogs.addEventListener('click', (e) => {
@@ -69,15 +81,36 @@ class DataGuardPopup {
 
             if (response.success) {
                 const policy = response.policy;
+                console.log('Loading policy:', policy);
+                
+                // Update UI elements with saved policy
                 this.allowSubscription.checked = policy.allowSubscriptionProof;
                 this.allowDelivery.checked = policy.allowDeliveryProof;
                 this.allowPurchase.checked = policy.allowPurchaseProof;
                 this.redactBodies.checked = policy.redactEmailBodies;
                 this.maxEmailAge.value = policy.maxEmailAge;
+                
+                console.log('Policy loaded successfully');
+                this.showNotification('Policy loaded', 'success');
+            } else {
+                console.error('Failed to get policy:', response.error);
+                // Load default policy if none exists
+                this.loadDefaultPolicy();
             }
         } catch (error) {
             console.error('Failed to load user policy:', error);
+            // Load default policy on error
+            this.loadDefaultPolicy();
         }
+    }
+
+    loadDefaultPolicy() {
+        console.log('Loading default policy');
+        this.allowSubscription.checked = true;
+        this.allowDelivery.checked = true;
+        this.allowPurchase.checked = false;
+        this.redactBodies.checked = true;
+        this.maxEmailAge.value = 90;
     }
 
     async savePolicy() {
@@ -91,6 +124,8 @@ class DataGuardPopup {
             showSubjectInfo: true
         };
 
+        console.log('Saving policy:', policy);
+
         try {
             const response = await this.sendMessage({
                 type: 'UPDATE_USER_POLICY',
@@ -98,8 +133,10 @@ class DataGuardPopup {
             });
 
             if (response.success) {
+                console.log('Policy saved successfully');
                 this.showNotification('Policy updated successfully');
             } else {
+                console.error('Failed to save policy:', response.error);
                 this.showNotification('Failed to update policy', 'error');
             }
         } catch (error) {
@@ -109,16 +146,35 @@ class DataGuardPopup {
     }
 
     async runDemo(predicateType) {
-        this.showNotification(`Running ${predicateType} proof demo...`);
+        this.showNotification(`Testing ${predicateType} data filtering...`);
 
         try {
+            // Get current policy to show what would be allowed
+            const policyResponse = await this.sendMessage({
+                type: 'GET_USER_POLICY'
+            });
+
+            if (!policyResponse.success) {
+                throw new Error('Failed to get user policy');
+            }
+
+            const policy = policyResponse.policy;
+            
+            // Check if this predicate type is allowed
+            const isAllowed = this.isPredicateAllowed(predicateType, policy);
+            
+            if (!isAllowed) {
+                this.showNotification(`${predicateType} data access is disabled in your policy`, 'error');
+                return;
+            }
+
             // Request email data
             const dataResponse = await this.sendMessage({
                 type: 'REQUEST_EMAIL_DATA',
                 data: {
                     predicate: {
                         type: predicateType,
-                        maxAge: 90
+                        maxAge: policy.maxEmailAge
                     }
                 }
             });
@@ -127,29 +183,77 @@ class DataGuardPopup {
                 throw new Error(dataResponse.error || 'Failed to get email data');
             }
 
-            // Generate proof
-            const proofResponse = await this.sendMessage({
-                type: 'GENERATE_PROOF',
-                data: {
-                    predicate: {
-                        type: predicateType,
-                        maxAge: 90
-                    },
-                    emailData: dataResponse.data
-                }
-            });
-
-            if (proofResponse.success) {
-                this.displayProofResult(proofResponse.proof, dataResponse.data);
-                this.showNotification(`${predicateType} proof generated successfully!`);
-            } else {
-                throw new Error(proofResponse.error || 'Failed to generate proof');
-            }
+            // Show the filtered results
+            this.displayFilteredResults(predicateType, dataResponse.data, policy);
+            this.showNotification(`Found ${dataResponse.data.length} ${predicateType} emails (filtered by policy)`);
 
         } catch (error) {
             console.error('Demo failed:', error);
             this.showNotification(`Demo failed: ${error.message}`, 'error');
         }
+    }
+
+    isPredicateAllowed(predicateType, policy) {
+        switch (predicateType) {
+            case 'subscription':
+                return policy.allowSubscriptionProof;
+            case 'delivery':
+                return policy.allowDeliveryProof;
+            case 'purchase':
+                return policy.allowPurchaseProof;
+            default:
+                return false;
+        }
+    }
+
+    displayFilteredResults(predicateType, emailData, policy) {
+        // Create a results display in the popup
+        let resultsHtml = `
+            <div class="filter-results">
+                <h4>${predicateType.charAt(0).toUpperCase() + predicateType.slice(1)} Data (${emailData.length} emails)</h4>
+                <div class="filter-info">
+                    <strong>Policy Applied:</strong><br>
+                    • Max age: ${policy.maxEmailAge} days<br>
+                    • Bodies redacted: ${policy.redactEmailBodies ? 'Yes' : 'No'}<br>
+                    • Sender info: ${policy.showSenderInfo ? 'Shown' : 'Hidden'}<br>
+                    • Subject info: ${policy.showSubjectInfo ? 'Shown' : 'Hidden'}
+                </div>
+                <div class="email-list">
+        `;
+
+        emailData.slice(0, 3).forEach(email => {
+            resultsHtml += `
+                <div class="email-item">
+                    <strong>${policy.showSubjectInfo ? email.subject : '[REDACTED]'}</strong><br>
+                    <small>From: ${policy.showSenderInfo ? email.sender : '[REDACTED]'}</small><br>
+                    <small>Body: ${policy.redactEmailBodies ? '[REDACTED]' : email.body.substring(0, 50) + '...'}</small>
+                </div>
+            `;
+        });
+
+        if (emailData.length > 3) {
+            resultsHtml += `<div class="more-emails">... and ${emailData.length - 3} more emails</div>`;
+        }
+
+        resultsHtml += `
+                </div>
+            </div>
+        `;
+
+        // Add results to the popup
+        const resultsSection = document.createElement('section');
+        resultsSection.className = 'results-section';
+        resultsSection.innerHTML = resultsHtml;
+
+        // Remove existing results if any
+        const existingResults = document.querySelector('.results-section');
+        if (existingResults) {
+            existingResults.remove();
+        }
+
+        // Add new results before footer
+        const footer = document.querySelector('.footer');
+        footer.parentNode.insertBefore(resultsSection, footer);
     }
 
     displayProofResult(proof, emailData) {
