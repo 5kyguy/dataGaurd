@@ -1,17 +1,46 @@
-import { sampleEmails, Email, getEmailsByType, getUnreadEmails } from './data/sampleEmails.js';
+interface Email {
+    id: string;
+    from: string;
+    to: string;
+    subject: string;
+    body: string;
+    timestamp: string;
+    type: 'subscription' | 'delivery' | 'purchase';
+    isRead: boolean;
+}
 
 class EmailServiceDemo {
-    private emails: Email[] = sampleEmails;
-    private filteredEmails: Email[] = sampleEmails;
+    private emails: Email[] = [];
+    private filteredEmails: Email[] = [];
     private currentFilter: string = 'all';
 
     constructor() {
         console.log('EmailServiceDemo constructor');
-        console.log('Sample emails loaded:', this.emails.length);
-        console.log('First email:', this.emails[0]);
         this.initializeEventListeners();
-        this.renderEmails();
-        this.updateStats();
+        this.loadEmails();
+    }
+
+    private async loadEmails(): Promise<void> {
+        try {
+            console.log('Loading emails from API...');
+            const response = await fetch('/api/emails');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            this.emails = await response.json();
+            this.filteredEmails = this.emails;
+            console.log('Sample emails loaded:', this.emails.length);
+            console.log('First email:', this.emails[0]);
+            this.renderEmails();
+            this.updateStats();
+        } catch (error) {
+            console.error('Failed to load emails:', error);
+            // Fallback: show error message
+            const emailList = document.getElementById('email-list');
+            if (emailList) {
+                emailList.innerHTML = '<div class="error">Failed to load emails. Please check the console for details.</div>';
+            }
+        }
     }
 
     private initializeEventListeners(): void {
@@ -25,29 +54,34 @@ class EmailServiceDemo {
         console.log('Event listeners initialized');
     }
 
-    private filterEmails(filter: string): void {
+    private async filterEmails(filter: string): Promise<void> {
         this.currentFilter = filter;
         
         // Update active button
         document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`${filter}-emails`)?.classList.add('active');
 
-        // Filter emails
-        switch (filter) {
-            case 'subscription':
-                this.filteredEmails = getEmailsByType('subscription');
-                break;
-            case 'delivery':
-                this.filteredEmails = getEmailsByType('delivery');
-                break;
-            case 'purchase':
-                this.filteredEmails = getEmailsByType('purchase');
-                break;
-            case 'unread':
-                this.filteredEmails = getUnreadEmails();
-                break;
-            default:
-                this.filteredEmails = this.emails;
+        try {
+            let url = '/api/emails';
+            if (filter !== 'all') {
+                url += `?type=${filter}`;
+            }
+            
+            console.log('Filtering emails with URL:', url);
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            this.filteredEmails = await response.json();
+            console.log('Filtered emails:', this.filteredEmails.length);
+        } catch (error) {
+            console.error('Failed to filter emails:', error);
+            // Fallback to local filtering
+            this.filteredEmails = this.emails.filter(email => {
+                if (filter === 'all') return true;
+                if (filter === 'unread') return !email.isRead;
+                return email.type === filter;
+            });
         }
 
         this.renderEmails();

@@ -280,3 +280,14 @@ body {
         align-self: flex-end;
     }
 }
+
+/* Error styling */
+.error {
+    background: #fee;
+    color: #c33;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #fcc;
+    text-align: center;
+    margin: 20px 0;
+}
