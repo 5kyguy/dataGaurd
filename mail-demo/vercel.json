@@ -5,8 +5,12 @@
   "installCommand": "yarn install",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/emails",
       "destination": "/api/index"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
