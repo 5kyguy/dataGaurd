@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGuard API Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            border-left-color: #dc3545;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ DataGuard API Test</h1>
+        
+        <div class="info">
+            <strong>Instructions:</strong><br>
+            1. Install the DataGuard extension in your browser<br>
+            2. Click the buttons below to test API requests<br>
+            3. The extension should intercept these requests and ask for your approval<br>
+            4. Check the extension popup to see the filtering results
+        </div>
+
+        <div class="test-section">
+            <h3>📧 Email Data API Tests</h3>
+            <p>These buttons will make requests to the mail-demo service, which should be intercepted by DataGuard:</p>
+            
+            <button onclick="testAPI('subscription')">Test Subscription Emails</button>
+            <button onclick="testAPI('delivery')">Test Delivery Emails</button>
+            <button onclick="testAPI('purchase')">Test Purchase Emails</button>
+            <button onclick="testAPI('unread')">Test Unread Emails</button>
+            <button onclick="testAPI('all')">Test All Emails</button>
+            
+            <div id="status"></div>
+            <div id="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Direct API Tests (Bypass Extension)</h3>
+            <p>These tests directly call the API without going through the extension:</p>
+            
+            <button onclick="testDirectAPI('subscription')">Direct: Subscription</button>
+            <button onclick="testDirectAPI('delivery')">Direct: Delivery</button>
+            <button onclick="testDirectAPI('purchase')">Direct: Purchase</button>
+            
+            <div id="directStatus"></div>
+            <div id="directResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        
+        function showStatus(message, isError = false, targetId = 'status') {
+            const statusEl = document.getElementById(targetId);
+            statusEl.innerHTML = `<div class="status ${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        function showResult(data, targetId = 'result') {
+            const resultEl = document.getElementById(targetId);
+            resultEl.innerHTML = `<div class="result">${JSON.stringify(data, null, 2)}</div>`;
+        }
+        
+        async function testAPI(type) {
+            showStatus(`Testing ${type} emails...`, false);
+            
+            try {
+                const url = type === 'all' ? `${API_BASE}/emails` : `${API_BASE}/emails?type=${type}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                showStatus(`✅ Successfully retrieved ${data.length} ${type} emails`, false);
+                showResult(data);
+                
+            } catch (error) {
+                showStatus(`❌ Error: ${error.message}`, true);
+                showResult({ error: error.message });
+            }
+        }
+        
+        async function testDirectAPI(type) {
+            showStatus(`Testing direct API call for ${type}...`, false, 'directStatus');
+            
+            try {
+                // Use a different approach to bypass potential extension interception
+                const url = `${API_BASE}/emails?type=${type}`;
+                
+                // Create a new request with different headers
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Direct-Call': 'true',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                showStatus(`✅ Direct call successful: ${data.length} ${type} emails`, false, 'directStatus');
+                showResult(data, 'directResult');
+                
+            } catch (error) {
+                showStatus(`❌ Direct call error: ${error.message}`, true, 'directStatus');
+                showResult({ error: error.message }, 'directResult');
+            }
+        }
+        
+        // Test if the mail-demo service is running
+        async function checkServiceStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/emails`);
+                if (response.ok) {
+                    console.log('✅ Mail-demo service is running');
+                } else {
+                    console.log('⚠️ Mail-demo service responded with error:', response.status);
+                }
+            } catch (error) {
+                console.log('❌ Mail-demo service is not accessible:', error.message);
+                showStatus('❌ Mail-demo service is not running. Please start it first.', true);
+            }
+        }
+        
+        // Check service status on page load
+        checkServiceStatus();
+    </script>
+</body>
+</html>
