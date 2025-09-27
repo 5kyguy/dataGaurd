@@ -23,12 +23,12 @@ app.use((req, res, next) => {
   }
 });
 
-// Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+// Serve static files from the current directory (dist)
+app.use(express.static(__dirname));
 
 // Serve the main HTML file
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // API endpoint to get emails (for AI agents to access)
@@ -50,8 +50,14 @@ app.get('/api/emails', (req, res) => {
     res.json(emails);
 });
 
-app.listen(PORT, () => {
+// Export the app for Vercel
+export default app;
+
+// Only start the server if not in Vercel environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
     console.log(`📧 Email Service Demo running at http://localhost:${PORT}`);
     console.log(`🔗 API endpoint: GET /api/emails?type=subscription|delivery|purchase|unread`);
     console.log(`🤖 This service simulates a normal email API that AI agents would access`);
-});
+  });
+}
