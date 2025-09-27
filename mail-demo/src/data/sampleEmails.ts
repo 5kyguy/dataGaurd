@@ -42,7 +42,7 @@ export const sampleEmails: Email[] = [
     isRead: false
   },
   {
-    id: '16',
+    id: '4',
     from: 'news@nyt.com',
     to: 'user@example.com',
     subject: 'The Morning Briefing',
@@ -52,7 +52,7 @@ export const sampleEmails: Email[] = [
     isRead: true
   },
   {
-    id: '17',
+    id: '5',
     from: 'offers@udemy.com',
     to: 'user@example.com',
     subject: '50% off courses you might like',
@@ -64,7 +64,7 @@ export const sampleEmails: Email[] = [
 
   // Delivery emails
   {
-    id: '4',
+    id: '6',
     from: 'tracking@amazon.com',
     to: 'user@example.com',
     subject: 'Your package has been delivered',
@@ -74,7 +74,7 @@ export const sampleEmails: Email[] = [
     isRead: true
   },
   {
-    id: '5',
+    id: '7',
     from: 'notifications@dhl.com',
     to: 'user@example.com',
     subject: 'Package delivered successfully',
@@ -84,7 +84,7 @@ export const sampleEmails: Email[] = [
     isRead: false
   },
   {
-    id: '6',
+    id: '8',
     from: 'orders@flipkart.com',
     to: 'user@example.com',
     subject: 'Your Flipkart order has been delivered',
@@ -94,7 +94,7 @@ export const sampleEmails: Email[] = [
     isRead: true
   },
   {
-    id: '18',
+    id: '9',
     from: 'service@swiggy.in',
     to: 'user@example.com',
     subject: 'Order delivered: Paneer Butter Masala & Naan',
@@ -104,7 +104,7 @@ export const sampleEmails: Email[] = [
     isRead: false
   },
   {
-    id: '19',
+    id: '10',
     from: 'shipping@nike.com',
     to: 'user@example.com',
     subject: 'Nike order delivered',
@@ -116,7 +116,7 @@ export const sampleEmails: Email[] = [
 
   // Purchase emails
   {
-    id: '7',
+    id: '11',
     from: 'receipts@stripe.com',
     to: 'user@example.com',
     subject: 'Receipt for your purchase',
@@ -126,7 +126,7 @@ export const sampleEmails: Email[] = [
     isRead: true
   },
   {
-    id: '8',
+    id: '12',
     from: 'orders@shopify.com',
     to: 'user@example.com',
     subject: 'Order confirmation - #SHOP123456',
@@ -136,7 +136,7 @@ export const sampleEmails: Email[] = [
     isRead: false
   },
   {
-    id: '9',
+    id: '13',
     from: 'billing@spotify.com',
     to: 'user@example.com',
     subject: 'Your Spotify Premium subscription',
@@ -146,7 +146,7 @@ export const sampleEmails: Email[] = [
     isRead: true
   },
   {
-    id: '20',
+    id: '14',
     from: 'billing@netflix.com',
     to: 'user@example.com',
     subject: 'Your Netflix payment confirmation',
@@ -156,7 +156,7 @@ export const sampleEmails: Email[] = [
     isRead: true
   },
   {
-    id: '21',
+    id: '15',
     from: 'sales@apple.com',
     to: 'user@example.com',
     subject: 'Apple Store receipt',
@@ -165,8 +165,6 @@ export const sampleEmails: Email[] = [
     type: 'purchase',
     isRead: false
   },
-
-  // (keep the existing general emails 10–15 for realism, but ignore in demo predicates)
 ];
 
 export const getEmailsByType = (type: Email['type']): Email[] => {

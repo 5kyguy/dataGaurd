@@ -1,4 +1,4 @@
-import { sampleEmails, Email, getEmailsByType, getUnreadEmails } from './data/sampleEmails';
+import { sampleEmails, Email, getEmailsByType, getUnreadEmails } from './data/sampleEmails.js';
 
 class EmailServiceDemo {
     private emails: Email[] = sampleEmails;
@@ -6,6 +6,9 @@ class EmailServiceDemo {
     private currentFilter: string = 'all';
 
     constructor() {
+        console.log('EmailServiceDemo constructor');
+        console.log('Sample emails loaded:', this.emails.length);
+        console.log('First email:', this.emails[0]);
         this.initializeEventListeners();
         this.renderEmails();
         this.updateStats();
@@ -18,6 +21,8 @@ class EmailServiceDemo {
         document.getElementById('delivery-emails')?.addEventListener('click', () => this.filterEmails('delivery'));
         document.getElementById('purchase-emails')?.addEventListener('click', () => this.filterEmails('purchase'));
         document.getElementById('unread-emails')?.addEventListener('click', () => this.filterEmails('unread'));
+
+        console.log('Event listeners initialized');
     }
 
     private filterEmails(filter: string): void {
@@ -51,14 +56,24 @@ class EmailServiceDemo {
 
     private renderEmails(): void {
         const emailList = document.getElementById('email-list');
-        if (!emailList) return;
+        console.log('Email list element:', emailList);
+        if (!emailList) {
+            console.error('Email list element not found!');
+            return;
+        }
 
         emailList.innerHTML = '';
+
+        console.log('Rendering emails', this.filteredEmails);
+        console.log('Number of emails to render:', this.filteredEmails.length);
 
         this.filteredEmails.forEach(email => {
             const emailElement = this.createEmailElement(email);
             emailList.appendChild(emailElement);
         });
+
+        console.log('Emails rendered', this.filteredEmails);
+        console.log('Email list children count:', emailList.children.length);
     }
 
     private createEmailElement(email: Email): HTMLElement {
