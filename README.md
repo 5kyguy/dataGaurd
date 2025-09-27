@@ -1,28 +1,42 @@
-# DataGuard — Project Plan
+# DataGuard — Privacy-Preserving Email Data Marketplace
 
 ETHGlobal New Delhi 2025 Project
 
+## Milestone 1: Extension MVP ✅ **COMPLETED**
+
+### MVP Features
+- Intercepts email data requests from third-party apps
+- Applies user policy and redaction
+- Returns filtered payload with payment processing
+
+## Milestone 2: x402 Payment Integration (predefined price, WIP)
+
+## Milestone 3: Agentic Negotiation
+
+## Milestone 4: ZK Proof Integration with Circom/snarkjs (lower price) (out of scope for hackathon)
+
 ## 1 — One-line elevator pitch
 
-**DataGuard**: a browser extension / local agent that intermediates third-party requests for email data, returning only minimal redacted data and cryptographic proofs of predicates about your inbox — so apps get utility without seeing the rest of your emails.
+**DataGuard**: transforms your inbox into a privacy-preserving marketplace where you get paid for email data access via x402 protocol while maintaining complete control over your data.
 
 ---
 
 ## 2 — Core goals (what I *intend* to deliver for hackathon)
 
-* Build an end-to-end demo that proves the concept: extension intercepts a request for email data, applies a user policy, returns filtered results and a verifiable ZK proof for a simple predicate.
-* Focus domain: **email** only.
-* Implement and demo **2 concrete predicates**: subscription acknowledgement & package delivery (plus optional proof of purchase as a third).
-* Provide a minimal verifier component (JS library + on-chain verifier contract on testnet) to show third-party verification of proofs.
-* Clear UI flow that shows negotiation and the resulting redaction/proof to a user and to a requesting app.
+* Build an end-to-end demo that proves the concept: extension negotiates payment via x402 protocol for email data access, applies user policy, returns filtered results with payment processing.
+* Focus domain: **email** only with **decentralized storage integration**.
+* Implement and demo **2 concrete predicates**: subscription acknowledgement & package delivery with **monetization**.
+* Provide **AI agent negotiation** for automated pricing and **x402 payment processing** on Polygon testnet.
+* Clear UI flow that shows payment negotiation, data access approval, and **user earnings**.
 
 ---
 
 ## 3 — Decided scope (what I am intentionally NOT building right now)
 
-* No production Gmail OAuth integration in MVP — use a **mock/local email store** with realistic sample emails. ✅ **COMPLETED**: 21 realistic sample emails implemented in `/mail-demo/src/data/sampleEmails.ts`
-* No enterprise-scale zk optimizations; a toy circuit/proof is acceptable for hackathon proof-of-concept.
+* No production Gmail OAuth integration in MVP — use **Dmail + IPFS** for decentralized email storage. ✅ **PLANNED**: Integration with Dmail Network for IPFS-stored emails.
+* No complex ZK circuits for MVP — focus on **payment-for-data** model with basic privacy proofs.
 * No full support for multiple data domains (photos, calendar, files) — email only.
+* No mobile development — browser extension + web interface only.
 
 ---
 
@@ -30,25 +44,22 @@ ETHGlobal New Delhi 2025 Project
 
 ### Core predicates to implement (MVP)
 
-1. **Subscription Acknowledgement**
-
+1. **Subscription Acknowledgement** 💰 **$0.10-0.50 per proof**
    * Predicate: "There exists an email from a recognized newsletter sender OR containing keyword `unsubscribe`/`subscription` in subject within the last X months."
    * Verifiable claim: boolean `has_subscription == true` or `count_subscriptions >= N`.
-   * Demo value: allow apps to know user is subscribed (e.g., to opt-in offers) without full inbox access.
+   * Demo value: AI training data, marketing intelligence, research analytics.
 
-2. **Package Delivery**
-
+2. **Package Delivery** 💰 **$0.25-1.00 per proof**
    * Predicate: "There exists a delivery confirmation email from recognized carriers or ecommerce senders (Amazon, Flipkart, DHL) within the last X weeks."
    * Verifiable claim: `has_delivery == true` and optionally `count_deliveries >= N`.
-   * Demo value: verify recent deliveries for reward/returns flows or targeted offers.
+   * Demo value: logistics analytics, consumer behavior research, targeted advertising.
 
 ### Additional predicate (nice-to-have)
 
-3. **Proof of Purchase (count)**
-
+3. **Proof of Purchase (count)** 💰 **$0.50-2.00 per proof**
    * Predicate: "Number of purchase-confirmation emails in the last M days ≥ K."
    * Verifiable claim: `count_purchases >= K`.
-   * Demo value: loyalty tiers or eligibility checks.
+   * Demo value: financial services verification, loyalty program analytics, market research.
 
 ---
 
