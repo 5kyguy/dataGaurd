@@ -1,12 +1,27 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { sampleEmails, getEmailsByType, getUnreadEmails } from './data/sampleEmails.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Enable CORS for all origins
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Direct-Call, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, '..', 'dist')));
@@ -19,9 +34,6 @@ app.get('/', (req, res) => {
 // API endpoint to get emails (for AI agents to access)
 app.get('/api/emails', (req, res) => {
     const { type } = req.query;
-    
-    // Import the sample emails
-    const { sampleEmails, getEmailsByType, getUnreadEmails } = require('./data/sampleEmails');
     
     let emails = sampleEmails;
     
