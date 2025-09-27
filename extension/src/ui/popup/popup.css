@@ -144,7 +144,26 @@ h3 {
 }
 
 .policy-item {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.global-policy {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-radius: 8px;
+    border: 1px solid #bbdefb;
+}
+
+.policy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 .checkbox-label {
@@ -184,10 +203,204 @@ h3 {
     font-weight: bold;
 }
 
-.policy-advanced {
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #007bff;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Pricing Controls */
+.pricing-controls {
+    margin-top: 12px;
     padding: 12px;
-    background: #f8f9fa;
+    background: white;
     border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.price-input-group {
+    margin-bottom: 8px;
+}
+
+.price-input-group label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #666;
+    font-weight: 500;
+}
+
+.price-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.price-input .currency {
+    background: #f8f9fa;
+    padding: 6px 8px;
+    border-right: 1px solid #ddd;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.price-input input {
+    flex: 1;
+    padding: 6px 8px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.price-description {
+    margin-top: 6px;
+}
+
+.price-description small {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+/* Advanced Configuration */
+.policy-advanced {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.policy-advanced h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.advanced-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.advanced-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.advanced-item label {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #666;
+    font-weight: 500;
+}
+
+.advanced-item input {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.advanced-item small {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #666;
+}
+
+/* Payment Configuration */
+.payment-config {
+    margin-top: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+}
+
+.payment-config h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.config-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.config-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.config-item label {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #666;
+    font-weight: 500;
+}
+
+.config-item input {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.config-item input[readonly] {
+    background: #f8f9fa;
+    color: #666;
+}
+
+.config-item small {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #666;
 }
 
 .policy-advanced label {

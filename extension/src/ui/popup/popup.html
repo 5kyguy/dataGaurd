@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGuard</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>🛡️ DataGuard</h1>
+                <p>Privacy-preserving email access</p>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- Status Section -->
+            <section class="status-section">
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot active"></span>
+                    <span class="status-text">Active</span>
+                </div>
+                <div class="connection-status" id="connectionStatus">
+                    <span>Mail service: <span id="mailServiceStatus">Connecting...</span></span>
+                </div>
+            </section>
+
+            <!-- Recent Requests Section -->
+            <section class="requests-section">
+                <h3>Recent Requests</h3>
+                <div class="requests-list" id="requestsList">
+                    <div class="no-requests">No recent requests</div>
+                </div>
+            </section>
+
+            <!-- Policy Settings Section -->
+            <section class="policy-section">
+                <h3>💰 Data Access Policy & Pricing</h3>
+                <p class="policy-description">Configure x402 payment requirements for each data predicate. Set prices or deny access entirely.</p>
+                
+                <!-- Global Policy Toggle -->
+                <div class="global-policy">
+                    <div class="policy-header">
+                        <div class="policy-info">
+                            <strong>🌐 Global Data Access</strong>
+                            <small>Enable or disable all data sharing</small>
+                        </div>
+                        <div class="policy-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="globalDataSharing" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="policy-controls">
+                    <!-- Subscription Data -->
+                    <div class="policy-item">
+                        <div class="policy-header">
+                            <div class="policy-info">
+                                <strong>📧 Subscription Data</strong>
+                                <small>Newsletter subscriptions and unsubscribes</small>
+                            </div>
+                            <div class="policy-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="allowSubscription" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pricing-controls" id="subscriptionPricing">
+                            <div class="price-input-group">
+                                <label for="subscriptionPrice">Price per proof (USDC):</label>
+                                <div class="price-input">
+                                    <span class="currency">$</span>
+                                    <input type="number" id="subscriptionPrice" min="0" max="10" step="0.001" value="0.05">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Data -->
+                    <div class="policy-item">
+                        <div class="policy-header">
+                            <div class="policy-info">
+                                <strong>📦 Delivery Confirmations</strong>
+                                <small>Package deliveries and order confirmations</small>
+                            </div>
+                            <div class="policy-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="allowDelivery" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pricing-controls" id="deliveryPricing">
+                            <div class="price-input-group">
+                                <label for="deliveryPrice">Price per proof (USDC):</label>
+                                <div class="price-input">
+                                    <span class="currency">$</span>
+                                    <input type="number" id="deliveryPrice" min="0" max="10" step="0.001" value="0.10">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Data -->
+                    <div class="policy-item">
+                        <div class="policy-header">
+                            <div class="policy-info">
+                                <strong>🛒 Purchase Records</strong>
+                                <small>Purchase confirmations and receipts</small>
+                            </div>
+                            <div class="policy-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="allowPurchase" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pricing-controls" id="purchasePricing">
+                            <div class="price-input-group">
+                                <label for="purchasePrice">Price per proof (USDC):</label>
+                                <div class="price-input">
+                                    <span class="currency">$</span>
+                                    <input type="number" id="purchasePrice" min="0" max="10" step="0.001" value="0.25">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Data -->
+                    <div class="policy-item">
+                        <div class="policy-header">
+                            <div class="policy-info">
+                                <strong>💳 Financial Records</strong>
+                                <small>Bank statements, invoices, and financial documents</small>
+                            </div>
+                            <div class="policy-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="allowFinancial" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pricing-controls" id="financialPricing">
+                            <div class="price-input-group">
+                                <label for="financialPrice">Price per proof (USDC):</label>
+                                <div class="price-input">
+                                    <span class="currency">$</span>
+                                    <input type="number" id="financialPrice" min="0" max="10" step="0.001" value="0.50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Settings -->
+                    <div class="policy-item">
+                        <div class="policy-header">
+                            <div class="policy-info">
+                                <strong>🔒 Privacy & Data Protection</strong>
+                                <small>Configure what data is shared and how</small>
+                            </div>
+                        </div>
+                        <div class="privacy-controls">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="redactBodies" checked>
+                                <span class="checkmark"></span>
+                                <div class="policy-info">
+                                    <strong>Redact Email Bodies</strong>
+                                    <small>Hide email content, show only metadata</small>
+                                </div>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="redactPersonalInfo" checked>
+                                <span class="checkmark"></span>
+                                <div class="policy-info">
+                                    <strong>Redact Personal Information</strong>
+                                    <small>Hide names, addresses, and sensitive details</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Settings -->
+                <div class="policy-advanced">
+                    <h4>⚙️ Advanced Configuration</h4>
+                    <div class="advanced-grid">
+                        <div class="advanced-item">
+                            <label for="maxEmailAge">Max email age (days):</label>
+                            <input type="number" id="maxEmailAge" min="1" max="365" value="90">
+                            <small>Only emails newer than this age will be shared</small>
+                        </div>
+                        <div class="advanced-item">
+                            <label for="maxEmailsPerRequest">Max emails per request:</label>
+                            <input type="number" id="maxEmailsPerRequest" min="1" max="100" value="10">
+                            <small>Limit number of emails returned per proof request</small>
+                        </div>
+                        <div class="advanced-item">
+                            <label for="requestTimeout">Request timeout (seconds):</label>
+                            <input type="number" id="requestTimeout" min="10" max="300" value="60">
+                            <small>Maximum time allowed for payment completion</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Configuration -->
+                <div class="payment-config">
+                    <h4>💳 Payment Configuration</h4>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label for="walletAddress">Receiving Wallet:</label>
+                            <input type="text" id="walletAddress" placeholder="0x..." maxlength="42">
+                            <small>Your wallet address for receiving payments</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo Section -->
+            <section class="demo-section">
+                <h3>Test Data Filtering</h3>
+                <p>Try requesting different types of email data:</p>
+                <div class="demo-buttons">
+                    <button id="demoSubscription" class="demo-btn">Test Subscription Filter</button>
+                    <button id="demoDelivery" class="demo-btn">Test Delivery Filter</button>
+                    <button id="demoPurchase" class="demo-btn">Test Purchase Filter</button>
+                </div>
+            </section>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#" id="viewLogs">View Logs</a>
+                <a href="#" id="settings">Settings</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
